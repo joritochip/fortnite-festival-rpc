@@ -1,6 +1,6 @@
 # Fortnite Festival RPC
 
-Fortnite Festival RPC is a tool that provides a rich presence integration for Fortnite Festival on Discord.
+Fortnite Festival RPC is a tool that provides Discord rich presence and Last.fm scrobbling for Fortnite Festival.
 
 ## Installing
 
@@ -9,6 +9,14 @@ Fortnite Festival RPC requires the Discord desktop app.
 To set up Fortnite Festival RPC, follow these steps:
 - Install the executable file from the Releases tab in GitHub.
 - Run it and keep it open in the background while playing Fortnite Festival.
+
+### Last.fm scrobbling
+
+The first time you run Fortnite Festival RPC, you will be asked to configure Last.fm scrobbling. Follow the prompts to authenticate your account and begin scrobbling.
+
+Notes about Last.fm credentials:
+- Your Last.fm API key and secret will be stored locally on your device after setup.
+- Your Last.fm username and password are sent once to Last.fm in order to authenticate and are not stored anywhere.
 
 ## Building
 
@@ -26,4 +34,4 @@ Your configuration is stored in `%APPDATA%\fortnite-festival-rpc\config.json`, s
 
 ## Special Thanks
 
-Fortnite Festival RPC is derived from [BetterFortniteRPC](github.com/mmccall0813/BetterFortniteRPC).
+Fortnite Festival RPC is derived from [BetterFortniteRPC](https://github.com/mmccall0813/BetterFortniteRPC).
