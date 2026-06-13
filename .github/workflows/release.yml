@@ -1,0 +1,29 @@
+name: Attach built exe to release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Compile executable
+        run: bun run compile
+
+      - name: Upload exe to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: fortnite-festival-rpc.exe

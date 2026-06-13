@@ -1,0 +1,12 @@
+{
+    "include": ["src/**/*"],
+    "compilerOptions": {
+        "strict": true,
+        "module": "ESNext",
+        "target": "ESNext",
+        "moduleResolution": "bundler",
+        "esModuleInterop": true,
+        "allowImportingTsExtensions": true,
+        "noEmit": true
+    }
+}
