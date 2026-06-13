@@ -14,10 +14,6 @@ To set up Fortnite Festival RPC, follow these steps:
 
 The first time you run Fortnite Festival RPC, you will be asked to configure Last.fm scrobbling. Follow the prompts to authenticate your account and begin scrobbling.
 
-Notes about Last.fm credentials:
-- Your Last.fm API key and secret will be stored locally on your device after setup.
-- Your Last.fm username and password are sent once to Last.fm in order to authenticate and are not stored anywhere.
-
 ## Building
 
 If you'd prefer to download and run the code directly, you can do so by following these steps:

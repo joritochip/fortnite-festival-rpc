@@ -10,6 +10,7 @@ export interface Config {
         session_key: string;
     };
 	debug: boolean;
+	startupNotification?: boolean;
 }
 
 // stored in the app data directory 

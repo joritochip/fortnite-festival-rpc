@@ -21,7 +21,7 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Compile executable
-        run: bun run compile
+        run: bun run build.ts
 
       - name: Upload exe to release
         uses: softprops/action-gh-release@v2

@@ -1,6 +1,6 @@
-import LogWatcher from "./LogWatcher";
-import PresenceManager from "./PresenceManager";
-import { debugLog } from "../debug";
+import LogWatcher from "./LogWatcher.js";
+import PresenceManager from "./PresenceManager.js";
+import { debugLog } from "../debug.js";
 import type Scrobbler from "./Scrobbler.js";
 
 export type Song = {
