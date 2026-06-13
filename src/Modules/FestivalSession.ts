@@ -71,33 +71,36 @@ const INSTRUMENT_INTENSITY_KEYS: Record<string, keyof Intensities> = {
     "Drums": "ds",
     "Pro Lead": "pg",
     "Pro Bass": "pb",
-    "Pro Drums": "pd"
+    "Pro Drums": "pd",
+	"Pro Drums + Cymbals": "pd"
 };
 
 // map EPilgrimTrackType::Track<X> suffix to a display name
 function trackTypeToInstrument(raw: string): string {
-    switch(raw){
-        case "Vocals": return "Vocals";
-        case "ProVocals":
-        case "Karaoke": return "Karaoke";
-        case "Bass": return "Bass";
-        case "Drums":
-        case "Drum": return "Drums";
-        case "Lead":
-        case "Guitar": return "Lead";
-        case "Keys":
-        case "Keyboard": return "Keyboard";
+    const normalized = raw.replace(/[\s_-]/g, "").toLowerCase();
+    switch(normalized){
+        case "vocals": return "Vocals";
+        case "provocal":
+        case "provocals":
+        case "karaoke": return "Karaoke";
+        case "bass": return "Bass";
+        case "drums":
+        case "drum": return "Drums";
+        case "lead":
+        case "guitar": return "Lead";
+        case "keys":
+        case "keyboard": return "Keyboard";
 
-        case "ProLead":
-        case "PlasticGuitar": return "Pro Lead";
-        case "ProBass":
-        case "PlasticBass": return "Pro Bass";
-        case "ProDrums":
-		case "ProCymbals":
-        case "PlasticDrums":
-        case "PlasticDrum": return "Pro Drums";
-        case "ProKeys":
-        case "PlasticKeys": return "Pro Keyboard";
+        case "prolead":
+        case "plasticguitar": return "Pro Lead";
+        case "probass":
+        case "plasticbass": return "Pro Bass";
+        case "prodrums":
+        case "plasticdrums":
+        case "plasticdrum": return "Pro Drums";
+		case "procymbals": return "Pro Drums + Cymbals";
+        case "prokeys":
+        case "plastickeys": return "Pro Keyboard";
 
         default: return raw;
     }
@@ -152,7 +155,9 @@ class FestivalSession {
 
     async handleLine(line: string){
         const message = stripTimestamp(line);
+        this.handleTrackDifficulty(message);
         await this.handleSongData(message);
+        await this.handleProVocalsStart(message);
         this.handleSongLoaded(message);
         await this.handleQuickplayState(message);
         await this.handleSongStop(message);
@@ -170,17 +175,41 @@ class FestivalSession {
         const marker = /LogPilgrimGameEvaluator: \[....\] : Song data set. [0-9]* gems found for /;
         if(!marker.test(message)) return;
 
-        const info = message.replace(marker, "");
-        const difficulty = info.split("EPilgrimSongDifficulty::Difficulty")[1].split(" ")[0];
-        const instrument = trackTypeToInstrument(info.split("EPilgrimTrackType::Track")[1].split(" ")[0]);
+		const trackMatch = message.match(/EPilgrimTrackType::Track([A-Za-z]+)/);
+		if(!trackMatch) return;
+
+		const instrument = trackTypeToInstrument(trackMatch[1]);
 
         this.state.instrument = instrument;
-        this.state.difficulty = difficulty;
         this.state.stage = "playing";
 
         if(this.state.song) this.scrobbler.startSong(this.state.song);
 
-        debugLog(`[Festival] Now playing: instrument="${instrument}", difficulty="${difficulty}", song="${this.state.song?.track.tt ?? "(not resolved)"}"`);
+        debugLog(`[Festival] Now playing: instrument="${this.state.instrument}", difficulty="${this.state.difficulty}", song="${this.state.song?.track.tt ?? "(not resolved)"}"`);
+
+        await this.pushPresence(true);
+    }
+
+    // "LogPilgrimGemBreakListener: ... using track EPilgrimTrackType::Track<X> and Difficulty EPilgrimSongDifficulty::Difficulty<Y>"
+    private handleTrackDifficulty(message: string){
+        const match = message.match(/LogPilgrimGemBreakListener:.*using track EPilgrimTrackType::Track[A-Za-z]+ and Difficulty EPilgrimSongDifficulty::Difficulty([A-Za-z]+)/);
+        if(!match) return;
+
+        this.state.difficulty = match[1];
+    }
+
+	// for pro vocals/karaoke
+    // "LogPilgrimProVocalEvaluator: Parsed song and found N sections."
+    private async handleProVocalsStart(message: string){
+        const marker = /^LogPilgrimProVocalEvaluator: Parsed song and found [0-9]+ sections/;
+        if(!marker.test(message)) return;
+
+        this.state.instrument = "Karaoke";
+        this.state.stage = "playing";
+
+        if(this.state.song) this.scrobbler.startSong(this.state.song);
+
+        debugLog(`[Festival] Now playing: instrument="Karaoke", difficulty="${this.state.difficulty}", song="${this.state.song?.track.tt ?? "(not resolved)"}"`);
 
         await this.pushPresence(true);
     }

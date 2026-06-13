@@ -3,7 +3,7 @@ import * as path from "path";
 import * as os from "os";
 import { debugLog } from "../debug";
 
-export type LineHandler = (line: string) => void;
+export type LineHandler = (line: string) => void | Promise<void>;
 
 const FORTNITE_LOG_PATH = path.join(
     process.env.USERPROFILE ?? os.homedir(),
@@ -16,6 +16,7 @@ export default class LogWatcher {
     private lastSize: number;
     private buffer = "";
     private started = false;
+    private chain: Promise<void> = Promise.resolve();
 
     constructor(){
         this.lastSize = existsSync(FORTNITE_LOG_PATH) ? statSync(FORTNITE_LOG_PATH).size : 0;
@@ -62,7 +63,16 @@ export default class LogWatcher {
         while((newlineIndex = this.buffer.indexOf("\n")) !== -1){
             const line = this.buffer.slice(0, newlineIndex).replace(/\r$/, "");
             this.buffer = this.buffer.slice(newlineIndex + 1);
-            if(line !== "") for(const handler of this.handlers) handler(line);
+            if(line !== "") this.dispatch(line);
+        }
+    }
+
+    // queue each handler onto the chain
+    private dispatch(line: string){
+        for(const handler of this.handlers){
+            this.chain = this.chain
+                .then(() => handler(line))
+                .catch((err) => console.error("[LogWatcher] handler error:", err instanceof Error ? err.message : err));
         }
     }
 }

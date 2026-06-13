@@ -7,7 +7,7 @@ Fortnite Festival RPC is a tool that provides Discord rich presence and Last.fm 
 Fortnite Festival RPC requires the Discord desktop app.
 
 To set up Fortnite Festival RPC, follow these steps:
-- Install the executable file from the Releases tab in GitHub.
+- Install the executable file from the [latest release](https://github.com/joritochip/fortnite-festival-rpc/releases/latest) on GitHub.
 - Run it and keep it open in the background while playing Fortnite Festival.
 
 ### Last.fm scrobbling

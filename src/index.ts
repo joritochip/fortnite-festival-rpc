@@ -13,11 +13,11 @@ const manager = new PresenceManager(config);
 await registerFestivalHandler(watcher, manager);
 
 watcher.addLineHandler(async (line) => {
-    if(line.includes("LogOnlineGame: FortPC::ClientReturnToMainMenuWithTextReason()")){
-        await manager.clearStatus();
-    }
-
-    if(line.startsWith("Log file closed")){
+    if (
+		line.includes("LogOnlineGame: FortPC::ClientReturnToMainMenuWithTextReason()") ||
+		/Disconnecting: \d+: DevReason - Kicked/.test(line) ||
+		line.startsWith("Log file closed")
+	){
         await manager.clearStatus();
     }
 });

@@ -15,7 +15,8 @@ const INSTRUMENT_ICONS: Record<string, string> = {
 	"Drums": "drums",
 	"Pro Lead": "prolead",
 	"Pro Bass": "probass",
-	"Pro Drums": "prodrums"
+	"Pro Drums": "prodrums",
+	"Pro Drums + Cymbals": "procymbals"
 };
 
 // show keytar icon for keyboard instruments
@@ -31,12 +32,13 @@ function resolveInstrumentIcon(state: FestivalState): string | undefined {
 }
 
 function buildInstrumentLabel(state: FestivalState): string {
-    let label = state.instrument;
+    const parts: string[] = [];
+    if(state.difficulty) parts.push(state.difficulty);
     if(state.song && state.instrument){
-        const difficulty = getInstrumentDifficulty(state.song, state.instrument);
-        if(difficulty !== null) label += ` (${difficulty}/7)`;
+        const intensity = getInstrumentDifficulty(state.song, state.instrument);
+        if(intensity !== null) parts.push(`${intensity}/7`);
     }
-    return label;
+    return parts.length ? `${state.instrument} (${parts.join(", ")})` : state.instrument;
 }
 
 export default class PresenceManager {
@@ -71,7 +73,7 @@ export default class PresenceManager {
     }
 
     async setFestivalState(state: FestivalState){
-        this.festivalState = state;
+        this.festivalState = { ...state };
         await this.ensureConnected();
     }
 
